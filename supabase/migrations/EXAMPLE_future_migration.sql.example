@@ -1,0 +1,170 @@
+-- ============================================================================
+-- EXAMPLE MIGRATION - DO NOT RUN THIS FILE
+-- ============================================================================
+-- This is an example to show how to create future migrations
+-- Copy this template when creating new migrations
+-- ============================================================================
+
+-- Migration: [timestamp]_descriptive_name
+-- Description: Brief description of what this migration does
+-- Author: Your Name
+-- Date: YYYY-MM-DD
+
+-- ============================================================================
+-- EXAMPLE 1: Add new column to existing table
+-- ============================================================================
+
+ALTER TABLE public.products 
+ADD COLUMN IF NOT EXISTS discount_percentage INTEGER DEFAULT 0 
+CHECK (discount_percentage >= 0 AND discount_percentage <= 100);
+
+-- Add comment
+COMMENT ON COLUMN public.products.discount_percentage 
+IS 'Discount percentage (0-100%)';
+
+-- Add index if needed
+CREATE INDEX IF NOT EXISTS idx_products_discount 
+ON public.products(discount_percentage) 
+WHERE discount_percentage > 0;
+
+-- ============================================================================
+-- EXAMPLE 2: Create new table
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS public.wishlists (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    
+    -- Constraints
+    CONSTRAINT wishlists_user_product_unique UNIQUE (user_id, product_id)
+);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_wishlists_user_id ON public.wishlists(user_id);
+CREATE INDEX IF NOT EXISTS idx_wishlists_product_id ON public.wishlists(product_id);
+
+-- RLS
+ALTER TABLE public.wishlists ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Service role has full access" ON public.wishlists
+    FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
+
+-- Comments
+COMMENT ON TABLE public.wishlists IS 'User product wishlists';
+
+-- ============================================================================
+-- EXAMPLE 3: Add full-text search
+-- ============================================================================
+
+-- Add search column
+ALTER TABLE public.products 
+ADD COLUMN IF NOT EXISTS search_vector tsvector 
+GENERATED ALWAYS AS (
+    setweight(to_tsvector('english', coalesce(name, '')), 'A') ||
+    setweight(to_tsvector('english', coalesce(description, '')), 'B')
+) STORED;
+
+-- Create GIN index for fast search
+CREATE INDEX IF NOT EXISTS idx_products_search_vector 
+ON public.products USING gin(search_vector);
+
+-- ============================================================================
+-- EXAMPLE 4: Add audit logging
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS public.audit_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    table_name TEXT NOT NULL,
+    record_id UUID NOT NULL,
+    action TEXT NOT NULL CHECK (action IN ('INSERT', 'UPDATE', 'DELETE')),
+    old_data JSONB,
+    new_data JSONB,
+    user_id UUID REFERENCES public.users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_logs_table_record 
+ON public.audit_logs(table_name, record_id);
+
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at 
+ON public.audit_logs(created_at DESC);
+
+-- ============================================================================
+-- EXAMPLE 5: Create function and trigger
+-- ============================================================================
+
+-- Function to log changes
+CREATE OR REPLACE FUNCTION public.log_product_changes()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'UPDATE' THEN
+        INSERT INTO public.audit_logs (
+            table_name, 
+            record_id, 
+            action, 
+            old_data, 
+            new_data, 
+            user_id
+        ) VALUES (
+            TG_TABLE_NAME,
+            NEW.id,
+            'UPDATE',
+            row_to_json(OLD),
+            row_to_json(NEW),
+            NEW.owner_id
+        );
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Attach trigger
+CREATE TRIGGER log_products_update
+    AFTER UPDATE ON public.products
+    FOR EACH ROW
+    EXECUTE FUNCTION public.log_product_changes();
+
+-- ============================================================================
+-- HOW TO USE THIS TEMPLATE
+-- ============================================================================
+
+-- 1. Create new migration:
+--    supabase migration new your_feature_name
+
+-- 2. Copy relevant examples from this file
+
+-- 3. Modify for your needs
+
+-- 4. Test locally:
+--    supabase start
+--    supabase db push
+
+-- 5. If OK, commit to git:
+--    git add supabase/migrations/
+--    git commit -m "feat: add new migration"
+
+-- 6. Deploy to production:
+--    supabase db push --linked
+
+-- ============================================================================
+-- BEST PRACTICES
+-- ============================================================================
+
+-- ✅ Always use IF NOT EXISTS / IF EXISTS
+-- ✅ Add proper constraints and checks
+-- ✅ Create indexes for foreign keys
+-- ✅ Add comments for clarity
+-- ✅ Enable RLS for security
+-- ✅ Test migrations locally first
+-- ✅ One logical change per migration
+-- ✅ Use descriptive migration names
+
+-- ❌ Don't modify existing migrations
+-- ❌ Don't skip testing
+-- ❌ Don't forget indexes
+-- ❌ Don't forget constraints
+-- ❌ Don't drop tables without backup
+
+-- ============================================================================
+

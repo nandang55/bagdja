@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Your Email</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+    .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; }
+    .button { display: inline-block; padding: 12px 30px; background: #0ea5e9; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 30px; padding: 20px; color: #6b7280; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Welcome to Bagdja Marketplace!</h1>
+    </div>
+    <div class="content">
+      <h2>Confirm Your Email Address</h2>
+      <p>Thanks for signing up! Please confirm your email address by clicking the button below:</p>
+      <a href="{{ .ConfirmationURL }}" class="button">Confirm Email</a>
+      <p>Or copy and paste this link in your browser:</p>
+      <p style="word-break: break-all; color: #0ea5e9;">{{ .ConfirmationURL }}</p>
+      <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">
+        If you didn't create an account, you can safely ignore this email.
+      </p>
+    </div>
+    <div class="footer">
+      <p>&copy; 2025 Bagdja Marketplace. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+
