@@ -1,210 +1,330 @@
-# BAGDJA MARKETPLACE - 3-Layer Microservices MVP
+# 🏪 Bagdja Marketplace - Complete Ecosystem
 
-A secure and scalable marketplace demonstrating clean separation of concerns with a 3-layer architecture.
+Modern marketplace platform dengan arsitektur microservices yang scalable dan secure.
 
-## 🏗️ Architecture Overview
+## 🎯 Overview
+
+Bagdja adalah ecosystem marketplace lengkap yang terdiri dari:
+
+- **🛒 Bagdja Store** - Public marketplace untuk pembeli
+- **🔨 Bagdja Console** - Dashboard untuk developer/seller
+- **🔧 Bagdja API Services** - Backend microservices
+- **🔐 Bagdja Account** - Central authentication service
+
+## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     CLIENT LAYER                             │
-│  ┌──────────────────────┐  ┌──────────────────────────┐    │
-│  │  Store Frontend      │  │  Console Frontend        │    │
-│  │  (Public Buyers)     │  │  (Developers/Sellers)    │    │
-│  └──────────┬───────────┘  └───────────┬──────────────┘    │
-└─────────────┼──────────────────────────┼────────────────────┘
-              │                          │
-              └──────────┬───────────────┘
-                         │ HTTPS/REST
-              ┌──────────▼──────────────────────────────────┐
-              │         API SERVICES LAYER                  │
-              │  ┌────────────┐  ┌────────────┐            │
-              │  │Auth Service│  │Product Svc │            │
-              │  └────────────┘  └────────────┘            │
-              │  - JWT Validation  - Owner Isolation       │
-              └──────────┬──────────────────────────────────┘
-                         │ Service Role Key
-              ┌──────────▼──────────────────────────────────┐
-              │         DATA LAYER (SUPABASE)               │
-              │  - PostgreSQL Database                      │
-              │  - Auth Management                          │
-              │  - Storage                                  │
-              └─────────────────────────────────────────────┘
+│                    BAGDJA ECOSYSTEM                          │
+│                                                             │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
+│  │ bagdja-store    │  │ bagdja-console  │  │ bagdja-account│ │
+│  │ (marketplace)   │  │ (admin panel)   │  │ (auth hub)   │ │
+│  │ account.bagdja.com │ │ account.bagdja.com │ │ account.bagdja.com │ │
+│  └─────────┬───────┘  └─────────┬───────┘  └──────┬───────┘ │
+└────────────┼────────────────────┼──────────────────┼────────┘
+             │                    │                  │
+             └──────────┬─────────┴──────────────────┘
+                        │ Shared Authentication
+        ┌───────────────▼─────────────────────────────┐
+        │          BAGDJA ACCOUNT SERVICE             │
+        │  ┌─────────────────┐  ┌─────────────────┐   │
+        │  │ Authentication  │  │ User Management │   │
+        │  │ • Login/Logout  │  │ • Profile Data  │   │
+        │  │ • Registration  │  │ • Preferences   │   │
+        │  │ • Password Mgmt │  │ • Settings      │   │
+        │  └─────────────────┘  └─────────────────┘   │
+        └─────────────────┬───────────────────────────┘
+                          │
+        ┌─────────────────▼───────────────────────────┐
+        │              SUPABASE DATABASE              │
+        │  • User Profiles                           │
+        │  • Authentication Sessions                 │
+        │  • Application Permissions                 │
+        │  • Audit Logs                             │
+        └─────────────────────────────────────────────┘
 ```
 
 ## 📁 Repository Structure
 
 ```
 bagdja/
-├── bagdja-store-frontend/      # Public marketplace (Buyers)
-├── bagdja-console-frontend/    # Developer dashboard (Sellers)
-├── bagdja-api-services/        # Microservices API Gateway
-└── supabase-schema.sql         # Database schema
+├── README.md                     # This file
+├── package.json                  # Workspace configuration
+├── .gitignore
+├── docs/                         # Shared documentation
+│   ├── ARCHITECTURE.md
+│   ├── DEPLOYMENT.md
+│   └── CONTRIBUTING.md
+│
+├── bagdja-store-frontend/        # Public marketplace (port 5173)
+│   ├── src/
+│   ├── package.json
+│   └── README.md
+│
+├── bagdja-console-frontend/      # Developer dashboard (port 5174)
+│   ├── src/
+│   ├── package.json
+│   └── README.md
+│
+├── bagdja-api-services/          # Backend API (port 3001)
+│   ├── src/
+│   ├── package.json
+│   └── README.md
+│
+├── bagdja-account/               # Account service (port 5175)
+│   ├── src/
+│   ├── docs/
+│   ├── package.json
+│   └── README.md
+│
+└── shared/                       # Shared packages
+    ├── types/                    # Shared TypeScript types
+    ├── utils/                    # Shared utilities
+    ├── components/               # Shared UI components
+    └── config/                   # Shared configurations
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ and npm
-- Supabase Account
-- Supabase CLI (for migrations)
-- Vercel Account (for deployment)
 
-### 1. Setup Database
+- Node.js 18+
+- npm atau yarn
+- Supabase project
 
-**Option A: Cloud Supabase (No Docker Required)** ⭐ Recommended
-1. Create project at https://supabase.com
-2. Run `supabase-schema.sql` in SQL Editor
-3. Get credentials from Settings → API
-4. Follow: **[SETUP-CLOUD-SUPABASE.md](./SETUP-CLOUD-SUPABASE.md)**
+### Installation
 
-**Option B: Local Supabase (Requires Docker)**
 ```bash
-# Install Supabase CLI & Docker Desktop first
-brew install supabase/tap/supabase
-
-# Start local development
+# Clone repository
+git clone https://github.com/your-username/bagdja.git
 cd bagdja
-supabase start
-supabase db push
+
+# Apply configuration to all services
+npm run setup
+
+# Setup database connection
+npm run setup:database
+
+# Setup environment files
+npm run setup:env
+
+# Edit .env files with your Supabase credentials (if needed)
+# Then install all dependencies
+npm run install:all
 ```
 
-📚 **Full Migration Guide**: [MIGRATIONS.md](./MIGRATIONS.md) | [Cloud Setup](./SETUP-CLOUD-SUPABASE.md)
+### Development
 
-### 2. Setup API Services
 ```bash
-cd bagdja-api-services
-npm install
-cp .env.example .env
-# Edit .env with your Supabase credentials
+# Start all services
 npm run dev
+
+# Or start individual services
+npm run dev:store      # http://localhost:5173
+npm run dev:console    # http://localhost:5174  
+npm run dev:api        # http://localhost:3001
+npm run dev:account    # http://localhost:5175
 ```
 
-### 3. Setup Store Frontend
+## ⚙️ Configuration System
+
+Bagdja menggunakan sistem konfigurasi terpusat melalui file `config.json` di root project:
+
 ```bash
-cd bagdja-store-frontend
-npm install
-cp .env.example .env
-# Edit .env with API URL
-npm run dev
+# Setup configuration untuk semua services
+npm run setup
+
+# Interactive configuration editor
+npm run config
+
+# Show current configuration
+npm run config:show
+
+# Database management
+npm run db:setup          # Setup database connection
+npm run db:test           # Test database connection
+npm run db:show           # Show database configuration
+
+# Environment management
+npm run update:env        # Update .env files with latest config
+npm run env:show          # Show current environment configuration
+
+# Setup environment files
+npm run setup:env
 ```
 
-### 4. Setup Console Frontend
-```bash
-cd bagdja-console-frontend
-npm install
-cp .env.example .env
-# Edit .env with API URL
-npm run dev
-```
+### 🎛️ Central Configuration
+- **Service URLs & Ports** - Configure all service endpoints
+- **Database Connection** - Supabase credentials and settings
+- **Theme & Styling** - Customize colors, fonts, TailwindCSS
+- **Security Settings** - Password rules, rate limiting
+- **Feature Flags** - Enable/disable features
+- **Integration Settings** - Analytics, payment, email
 
-## 🔒 Security Model
+📚 **[Configuration Guide](./docs/setup/CONFIGURATION.md)**
 
-### Data Flow Rules
-1. **Frontend → API Only**: Frontends NEVER call Supabase directly
-2. **API → Supabase**: API uses Service Role Key with business logic enforcement
-3. **JWT Validation**: All protected routes validate tokens
-4. **Owner Isolation**: Developers can only modify their own products
+## 🛠️ Tech Stack
 
-### Authentication Flow
-1. User signs in via Supabase Auth (client-side)
-2. Frontend receives JWT token
-3. Frontend sends token in `Authorization: Bearer {token}` header
-4. API validates token and extracts user ID
-5. API enforces owner-based access control
+### Frontend
+- **React 18** + **TypeScript**
+- **Vite** - Build tool
+- **TailwindCSS** - Styling
+- **React Router** - Routing
+- **React Hook Form** - Form management
+- **Zustand** - State management
+- **TanStack Query** - Server state
 
-## 📊 Tech Stack
+### Backend
+- **Node.js** + **Express** + **TypeScript**
+- **Supabase** - Database & Authentication
+- **JWT** - Token-based authentication
 
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | React 18 + TypeScript + Vite + TailwindCSS |
-| **API** | Node.js + Express + TypeScript |
-| **Database** | Supabase (PostgreSQL) |
-| **Auth** | Supabase Auth + JWT |
-| **Deployment** | Vercel (Frontend) + Vercel Serverless (API) |
+### Database
+- **PostgreSQL** (via Supabase)
+- **Row Level Security (RLS)**
+- **Real-time subscriptions**
 
-## 🎯 MVP Features
+### Deployment
+- **Vercel** - Frontend & API hosting
+- **Custom domains** - account.bagdja.com, store.bagdja.com, etc.
 
-### Store Frontend
-- ✅ Public product browsing
-- ✅ Category filtering
-- ✅ Product detail pages
-- ✅ Buyer authentication
+## 🔒 Security Features
 
-### Console Frontend
-- ✅ Developer authentication
-- ✅ Product management (CRUD)
-- ✅ Owner-restricted access
-- ✅ Protected routes
+- ✅ **JWT Authentication** dengan refresh tokens
+- ✅ **Row Level Security** untuk data isolation
+- ✅ **Input Validation** dengan Zod schemas
+- ✅ **XSS & CSRF Protection**
+- ✅ **Rate Limiting** untuk API endpoints
+- ✅ **Audit Logging** untuk security events
 
-### API Services
-- ✅ Auth service (token validation)
-- ✅ Products service (public + protected CRUD)
-- ✅ Owner isolation logic
-- ✅ Microservices architecture
+## 📱 Services Overview
 
-## 📝 Environment Variables
+### 🛒 Bagdja Store (Public Marketplace)
+- **URL**: http://localhost:5173
+- **Purpose**: Public marketplace untuk pembeli
+- **Features**: Product browsing, search, categories, reviews
 
-### API Services
-```
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_SERVICE_KEY=eyJ...
-SUPABASE_JWT_SECRET=your-jwt-secret
-PORT=3001
-```
+### 🔨 Bagdja Console (Developer Dashboard)  
+- **URL**: http://localhost:5174
+- **Purpose**: Dashboard untuk developer/seller
+- **Features**: Product management, analytics, settings
 
-### Frontends
-```
-VITE_BAGDJA_API_URL=http://localhost:3001
-VITE_SUPABASE_URL=https://xxx.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJ...
-```
+### 🔧 Bagdja API Services (Backend)
+- **URL**: http://localhost:3001
+- **Purpose**: Backend API untuk semua services
+- **Features**: Authentication, product CRUD, business logic
+
+### 🔐 Bagdja Account (Authentication Hub)
+- **URL**: http://localhost:5175
+- **Purpose**: Central authentication service
+- **Features**: Registration, login, password management, profile settings
 
 ## 🚢 Deployment
 
-### API Services (Vercel)
-1. Push code to GitHub
-2. Import to Vercel
-3. Add environment variables
-4. Deploy
+### Production URLs
 
-### Frontends (Vercel)
-1. Push code to GitHub
-2. Import each frontend separately to Vercel
-3. Add environment variables
-4. Deploy
+- **Store**: https://store.bagdja.com
+- **Console**: https://console.bagdja.com  
+- **Account**: https://account.bagdja.com
+- **API**: https://api.bagdja.com
 
-## 📖 Documentation
+### Deploy Commands
 
-### Getting Started
-- [START HERE](./START-HERE.md) - Begin here!
-- [Quick Start Guide](./QUICKSTART.md) - 15-minute setup
-- [Project Structure](./PROJECT-STRUCTURE.md) - Architecture details
-- [Deployment Guide](./DEPLOYMENT.md) - Deploy to production
+```bash
+# Build all services
+npm run build
 
-### Database Migrations
-- [Migration Guide](./MIGRATIONS.md) - Complete migration documentation
-- [Migration Quick Start](./MIGRATIONS-QUICKSTART.md) - 5-minute setup
+# Deploy individual services
+cd bagdja-store-frontend && vercel --prod
+cd bagdja-console-frontend && vercel --prod
+cd bagdja-api-services && vercel --prod
+cd bagdja-account && vercel --prod
+```
 
-### Component Documentation
-- [Store Frontend README](./bagdja-store-frontend/README.md)
-- [Console Frontend README](./bagdja-console-frontend/README.md)
-- [API Services README](./bagdja-api-services/README.md)
+## 📚 Documentation
 
-### Additional Resources
-- [Checklist](./CHECKLIST.md) - Verification checklist
-- [Contributing](./CONTRIBUTING.md) - Contribution guidelines
+### Service-Specific Docs
+- [Store Frontend](./bagdja-store-frontend/README.md)
+- [Console Frontend](./bagdja-console-frontend/README.md)
+- [API Services](./bagdja-api-services/README.md)
+- [Account Service](./bagdja-account/README.md)
+
+### Documentation
+- [Development Guide](./docs/setup/DEVELOPMENT.md)
+- [Configuration System](./docs/setup/CONFIGURATION.md)
+- [Setup Guide](./docs/setup/)
+- [Architecture Guide](./docs/architecture/)
+- [Deployment Guide](./docs/deployment/)
+- [Contributing Guide](./docs/contributing/)
+
+### Account Service Docs
+- [Setup Guide](./bagdja-account/docs/SETUP.md)
+- [API Documentation](./bagdja-account/docs/API.md)
+- [Integration Guide](./bagdja-account/docs/INTEGRATION.md)
+- [Security Guide](./bagdja-account/docs/SECURITY.md)
+
+## 🔄 Development Workflow
+
+### Adding New Features
+
+1. **Create feature branch**
+   ```bash
+   git checkout -b feature/new-feature
+   ```
+
+2. **Develop in relevant service**
+   ```bash
+   cd bagdja-account  # or relevant service
+   npm run dev
+   ```
+
+3. **Test across all services**
+   ```bash
+   npm run dev  # Start all services
+   npm run test # Run all tests
+   ```
+
+4. **Commit and push**
+   ```bash
+   git add .
+   git commit -m "feat: add new feature"
+   git push origin feature/new-feature
+   ```
+
+### Shared Code Management
+
+```bash
+# Add shared dependency
+npm install package-name --workspace=shared
+
+# Use in specific service
+npm install shared --workspace=bagdja-account
+```
 
 ## 🤝 Contributing
 
-This is an MVP project. For production use, consider:
-- Rate limiting
-- Caching layer (Redis)
-- API versioning
-- Comprehensive error handling
-- Unit and integration tests
-- CI/CD pipelines
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
 
 ## 📄 License
 
-MIT License - See LICENSE file in each repository
+MIT License - see [LICENSE](./LICENSE) file for details
 
+## 🆘 Support
+
+- **Documentation**: Check service-specific README files
+- **Issues**: [GitHub Issues](https://github.com/your-username/bagdja/issues)
+- **Discord**: [Join our community](https://discord.gg/bagdja)
+- **Email**: support@bagdja.com
+
+---
+
+**Built with ❤️ for the Bagdja Ecosystem**
+
+**Version**: 1.0.0  
+**Last Updated**: October 2024  
+**License**: MIT

@@ -1,0 +1,333 @@
+{
+  "name": "Bagdja Marketplace Configuration",
+  "version": "1.0.0",
+  "description": "Centralized configuration for all Bagdja services",
+  
+  "project": {
+    "name": "bagdja",
+    "version": "1.0.0",
+    "description": "Modern marketplace platform with microservices architecture",
+    "author": "Bagdja Team",
+    "license": "MIT",
+    "repository": "https://github.com/your-username/bagdja.git"
+  },
+
+  "services": {
+    "bagdja-store-frontend": {
+      "name": "Bagdja Store",
+      "description": "Public marketplace for buyers",
+      "port": 5173,
+      "url": "http://localhost:5173",
+      "production_url": "https://store.bagdja.com",
+      "framework": "react",
+      "build_tool": "vite",
+      "styling": "tailwindcss",
+      "features": [
+        "product_browsing",
+        "search",
+        "categories",
+        "user_authentication"
+      ]
+    },
+    "bagdja-console-frontend": {
+      "name": "Bagdja Console", 
+      "description": "Developer dashboard for sellers",
+      "port": 5174,
+      "url": "http://localhost:5174",
+      "production_url": "https://console.bagdja.com",
+      "framework": "react",
+      "build_tool": "vite",
+      "styling": "tailwindcss",
+      "features": [
+        "product_management",
+        "analytics",
+        "dashboard",
+        "developer_tools"
+      ]
+    },
+    "bagdja-api-services": {
+      "name": "Bagdja API Services",
+      "description": "Backend API microservices",
+      "port": 3001,
+      "url": "http://localhost:3001",
+      "production_url": "https://api.bagdja.com",
+      "framework": "express",
+      "runtime": "nodejs",
+      "database": "supabase",
+      "features": [
+        "authentication",
+        "product_crud",
+        "user_management",
+        "business_logic"
+      ]
+    },
+    "bagdja-account": {
+      "name": "Bagdja Account",
+      "description": "Central authentication service",
+      "port": 5175,
+      "url": "http://localhost:5175",
+      "production_url": "https://account.bagdja.com",
+      "framework": "react",
+      "build_tool": "vite",
+      "styling": "tailwindcss",
+      "features": [
+        "user_registration",
+        "login_logout",
+        "password_management",
+        "profile_settings"
+      ]
+    }
+  },
+
+  "shared": {
+    "typescript": {
+      "version": "^5.3.0",
+      "strict": true,
+      "target": "ES2022",
+      "module": "ESNext",
+      "moduleResolution": "bundler"
+    },
+    "styling": {
+      "framework": "tailwindcss",
+      "version": "^3.4.0",
+      "theme": {
+        "primary": "#0ea5e9",
+        "secondary": "#64748b", 
+        "success": "#22c55e",
+        "warning": "#f59e0b",
+        "error": "#ef4444"
+      }
+    },
+    "database": {
+      "provider": "supabase",
+      "features": [
+        "postgresql",
+        "authentication",
+        "realtime",
+        "storage"
+      ]
+    }
+  },
+
+  "database": {
+    "supabase": {
+      "development": {
+        "project_name": "bagdja-dev",
+        "url": "https://vwtvghzabftcikbxtwad.supabase.co",
+        "anon_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dHZnaHphYmZ0Y2lrYnh0d2FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2ODU4MTQsImV4cCI6MjA3NTI2MTgxNH0.3697JcF0LiwGGawh-wJ8Snx0IHH3krF-lJ5eUEkwhBg",
+        "service_role_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dHZnaHphYmZ0Y2lrYnh0d2FkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTY4NTgxNCwiZXhwIjoyMDc1MjYxODE0fQ.7duIhSH4ZxT8xAdUKpLpPuvRn7ZJhKJBbK-SB1dt75g",
+        "jwt_secret": "u8G5a4uNoVuY49+SVQ/h59l88hdiZskE37BOWbYOb/Xh5vuAIk11RBVuApbsaIS8fAEEVGUYnQH8lXWEmDkCwQ==",
+        "region": "ap-southeast-1"
+      },
+      "production": {
+        "project_name": "bagdja-prod",
+        "url": "https://vwtvghzabftcikbxtwad.supabase.co",
+        "anon_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dHZnaHphYmZ0Y2lrYnh0d2FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2ODU4MTQsImV4cCI6MjA3NTI2MTgxNH0.3697JcF0LiwGGawh-wJ8Snx0IHH3krF-lJ5eUEkwhBg",
+        "service_role_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dHZnaHphYmZ0Y2lrYnh0d2FkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTY4NTgxNCwiZXhwIjoyMDc1MjYxODE0fQ.7duIhSH4ZxT8xAdUKpLpPuvRn7ZJhKJBbK-SB1dt75g",
+        "jwt_secret": "u8G5a4uNoVuY49+SVQ/h59l88hdiZskE37BOWbYOb/Xh5vuAIk11RBVuApbsaIS8fAEEVGUYnQH8lXWEmDkCwQ==",
+        "region": "ap-southeast-1"
+      },
+      "migration": {
+        "enabled": true,
+        "path": "./supabase/migrations",
+        "schema": "public",
+        "seed_path": "./supabase/seed.sql"
+      },
+      "auth": {
+        "site_url": "http://localhost:5175",
+        "redirect_urls": [
+          "http://localhost:5173/dashboard",
+          "http://localhost:5174/dashboard", 
+          "http://localhost:5175/dashboard",
+          "http://localhost:5175/auth/callback",
+          "http://localhost:5175/reset-password"
+        ],
+        "providers": {
+          "email": {
+            "enabled": true,
+            "confirm_email": true,
+            "double_confirm_changes": true,
+            "secure_email_change_enabled": true
+          },
+          "google": {
+            "enabled": false,
+            "client_id": "",
+            "client_secret": ""
+          },
+          "github": {
+            "enabled": false,
+            "client_id": "",
+            "client_secret": ""
+          }
+        }
+      },
+      "storage": {
+        "buckets": [
+          {
+            "name": "avatars",
+            "description": "User profile pictures",
+            "public": false,
+            "file_size_limit": 2097152,
+            "allowed_mime_types": ["image/jpeg", "image/png", "image/webp"]
+          },
+          {
+            "name": "product-images", 
+            "description": "Product images",
+            "public": true,
+            "file_size_limit": 5242880,
+            "allowed_mime_types": ["image/jpeg", "image/png", "image/webp"]
+          }
+        ]
+      }
+    }
+  },
+
+  "development": {
+    "node_version": ">=18.0.0",
+    "npm_version": ">=9.0.0",
+    "ports": {
+      "store": 5173,
+      "console": 5174,
+      "api": 3001,
+      "account": 5175
+    },
+    "tools": {
+      "prettier": "^3.1.0",
+      "eslint": "^8.55.0",
+      "concurrently": "^8.2.2"
+    }
+  },
+
+  "deployment": {
+    "provider": "vercel",
+    "domains": {
+      "store": "store.bagdja.com",
+      "console": "console.bagdja.com", 
+      "api": "api.bagdja.com",
+      "account": "account.bagdja.com"
+    },
+    "environment": {
+      "development": {
+        "api_url": "http://localhost:3001",
+        "supabase_url": "=https://vwtvghzabftcikbxtwad.supabase.co"
+      },
+      "production": {
+        "api_url": "https://api.bagdja.com",
+        "supabase_url": "=https://vwtvghzabftcikbxtwad.supabase.co"
+      }
+    }
+  },
+
+  "security": {
+    "password": {
+      "min_length": 8,
+      "require_uppercase": true,
+      "require_lowercase": true,
+      "require_numbers": true,
+      "require_symbols": true
+    },
+    "rate_limiting": {
+      "login": {
+        "max_attempts": 5,
+        "window_minutes": 15
+      },
+      "registration": {
+        "max_attempts": 3,
+        "window_minutes": 60
+      }
+    },
+    "session": {
+      "timeout_hours": 24,
+      "refresh_threshold_minutes": 5
+    }
+  },
+
+  "features": {
+    "registration": true,
+    "social_login": false,
+    "two_factor_auth": false,
+    "dark_mode": true,
+    "analytics": true,
+    "notifications": true,
+    "real_time": true,
+    "file_upload": true,
+    "email_verification": true
+  },
+
+  "integrations": {
+    "analytics": {
+      "google_analytics": {
+        "enabled": false,
+        "tracking_id": "G-XXXXXXXXXX"
+      },
+      "sentry": {
+        "enabled": false,
+        "dsn": "https://your-sentry-dsn"
+      }
+    },
+    "payment": {
+      "stripe": {
+        "enabled": false,
+        "public_key": "pk_test_...",
+        "secret_key": "sk_test_..."
+      }
+    },
+    "email": {
+      "provider": "supabase",
+      "templates": {
+        "welcome": true,
+        "password_reset": true,
+        "email_verification": true
+      }
+    }
+  },
+
+  "scripts": {
+    "setup": {
+      "description": "Setup project with default configurations",
+      "commands": [
+        "npm run install:all",
+        "npm run setup:env",
+        "npm run setup:git",
+        "npm run setup:vscode"
+      ]
+    },
+    "install": {
+      "description": "Install dependencies for all services",
+      "commands": [
+        "npm install",
+        "npm run install:shared",
+        "npm run install:store", 
+        "npm run install:console",
+        "npm run install:api",
+        "npm run install:account"
+      ]
+    },
+    "dev": {
+      "description": "Start all services in development mode",
+      "commands": [
+        "npm run dev"
+      ]
+    },
+    "build": {
+      "description": "Build all services for production",
+      "commands": [
+        "npm run build:shared",
+        "npm run build:store",
+        "npm run build:console", 
+        "npm run build:api",
+        "npm run build:account"
+      ]
+    },
+    "deploy": {
+      "description": "Deploy all services to production",
+      "commands": [
+        "npm run build",
+        "npm run deploy:store",
+        "npm run deploy:console",
+        "npm run deploy:api", 
+        "npm run deploy:account"
+      ]
+    }
+  }
+}
