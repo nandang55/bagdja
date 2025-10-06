@@ -288,8 +288,8 @@ export default function ProfilePage({ session }) {
             </p>
           </div>
 
-        {/* Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+          {/* Tabs */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
           <div className="flex border-b border-gray-200 dark:border-gray-700">
             {/* Personal Tab */}
             <button
@@ -950,6 +950,7 @@ export default function ProfilePage({ session }) {
             </div>
           </form>
         )}
+        </div>
       </div>
     </div>
   )

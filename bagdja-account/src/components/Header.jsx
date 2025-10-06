@@ -64,9 +64,9 @@ export default function Header({ session, showBackButton = false, backTo = '/' }
               <div className="w-10 h-10 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 p-1.5">
                 <Logo className="w-full h-full" />
               </div>
-              <div className="hidden sm:block">
+              <div className="hidden sm:block text-left">
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Bagdja Account
+                  BagdjaAccount
                 </h1>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
                   {session?.user?.email}
