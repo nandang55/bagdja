@@ -1,6 +1,10 @@
-# BAGDJA MARKETPLACE - DEPLOYMENT GUIDE
+# BAGDJA PLATFORM - DEPLOYMENT GUIDE
 
-Complete guide for deploying the 3-layer microservices architecture to production.
+Complete guide for deploying the Bagdja platform with 4 services to production:
+1. **Bagdja Account** - Authentication & Account Management Hub
+2. **API Services** - Backend microservices layer
+3. **Store Frontend** - Public marketplace
+4. **Console Frontend** - Developer dashboard
 
 ## 📋 Prerequisites
 
@@ -59,9 +63,152 @@ WHERE email = 'your-developer@email.com';
 
 ---
 
-## 🔧 Step 2: Deploy API Services (Backend Layer)
+## 👤 Step 2: Deploy Bagdja Account (Authentication Hub)
 
-### 2.1 Prepare Repository
+### 2.1 Overview
+
+`bagdja-account` is the central authentication and account management service. Users register here and manage their profiles, companies, and account settings.
+
+**Technology**: React + Vite + Supabase (Direct Connection)
+
+### 2.2 Database Setup
+
+Before deploying, run the required migrations in **Supabase SQL Editor**:
+
+```sql
+-- Run these migrations in order:
+-- 1. Create profiles table
+-- File: supabase/migrations/20251007000001_create_profiles_table.sql
+
+-- 2. Create companies table
+-- File: supabase/migrations/20251007000002_create_companies_table.sql
+
+-- 3. Create ownership logs
+-- File: supabase/migrations/20251007000003_create_company_ownership_logs.sql
+
+-- 4. Update RLS for transfer
+-- File: supabase/migrations/20251007000004_update_rls_for_transfer.sql
+
+-- 5. Sync existing profiles email
+-- File: supabase/migrations/20251007000005_sync_existing_profiles_email.sql
+
+-- 6-10. RLS fixes (run all remaining migrations)
+```
+
+Or use the all-in-one script in `bagdja-account/SETUP_DATABASE.md`.
+
+### 2.3 Prepare Repository (Monorepo)
+
+If deploying from monorepo:
+
+```bash
+cd /path/to/bagdja
+
+# Push entire monorepo to GitHub
+git add .
+git commit -m "Ready for deployment - Bagdja Account"
+git push origin main
+```
+
+### 2.4 Deploy to Vercel
+
+**Via Vercel Dashboard** (Recommended for Monorepo):
+
+1. Go to https://vercel.com/new
+2. Import your GitHub repository (`bagdja`)
+3. Configure project:
+   - **Project Name**: `bagdja-account`
+   - **Root Directory**: `bagdja-account` ⚠️ **CRITICAL for monorepo**
+   - **Framework Preset**: Vite (auto-detected)
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+   - **Install Command**: `npm install`
+
+4. Add Environment Variables:
+   ```env
+   VITE_SUPABASE_URL=https://xxxxx.supabase.co
+   VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+   ```
+
+   **Where to get these:**
+   - Supabase Dashboard → Settings → API
+   - Copy "Project URL" and "anon public" key
+
+5. Click **"Deploy"**
+
+**Via Vercel CLI**:
+
+```bash
+cd bagdja-account
+
+# Install Vercel CLI
+npm i -g vercel
+
+# Login
+vercel login
+
+# Deploy
+vercel
+
+# Follow prompts:
+# - Project name: bagdja-account
+# - Framework: Vite
+# - Deploy? Yes
+
+# Add environment variables
+vercel env add VITE_SUPABASE_URL
+# Paste your Supabase URL
+
+vercel env add VITE_SUPABASE_ANON_KEY
+# Paste your Supabase Anon Key
+
+# Deploy to production
+vercel --prod
+```
+
+### 2.5 Configure Supabase Auth URLs
+
+After deployment, update Supabase authentication settings:
+
+1. Go to **Supabase Dashboard → Authentication → URL Configuration**
+2. Set **Site URL**: `https://bagdja-account.vercel.app` (or your custom domain)
+3. Add **Redirect URLs**:
+   ```
+   https://bagdja-account.vercel.app/**
+   https://bagdja-account-*.vercel.app/**
+   ```
+
+### 2.6 Verify Deployment
+
+1. **Open URL**: `https://bagdja-account.vercel.app`
+2. **Test Registration**:
+   - Click "Sign Up"
+   - Enter email and password
+   - Verify email sent (check inbox/spam)
+   - Confirm account
+3. **Test Login**:
+   - Sign in with credentials
+   - Verify redirect to dashboard
+4. **Test Features**:
+   - ✅ Dashboard displays user info
+   - ✅ Profile page loads
+   - ✅ Create company works
+   - ✅ Company detail page accessible
+   - ✅ Dark/Light mode toggle works
+   - ✅ Logout redirects to login
+
+### 2.7 Note Your Account URL
+
+Save your Bagdja Account URL for integration:
+```
+https://bagdja-account.vercel.app
+```
+
+---
+
+## 🔧 Step 3: Deploy API Services (Backend Layer)
+
+### 3.1 Prepare Repository
 
 ```bash
 cd bagdja-api-services
@@ -77,7 +224,7 @@ git branch -M main
 git push -u origin main
 ```
 
-### 2.2 Deploy to Vercel
+### 3.2 Deploy to Vercel
 
 **Option A: Vercel Dashboard**
 
@@ -136,7 +283,7 @@ Deploy to production:
 vercel --prod
 ```
 
-### 2.3 Verify API Deployment
+### 3.3 Verify API Deployment
 
 ```bash
 curl https://your-api.vercel.app/api/health
@@ -151,7 +298,7 @@ Expected response:
 }
 ```
 
-### 2.4 Note Your API URL
+### 3.4 Note Your API URL
 
 Save your API URL for frontend configuration:
 ```
@@ -160,9 +307,9 @@ https://bagdja-api-services.vercel.app
 
 ---
 
-## 🏪 Step 3: Deploy Store Frontend (Public Store)
+## 🏪 Step 4: Deploy Store Frontend (Public Store)
 
-### 3.1 Prepare Repository
+### 4.1 Prepare Repository
 
 ```bash
 cd bagdja-store-frontend
@@ -175,7 +322,7 @@ git branch -M main
 git push -u origin main
 ```
 
-### 3.2 Deploy to Vercel
+### 4.2 Deploy to Vercel
 
 1. Go to https://vercel.com/new
 2. Import `bagdja-store-frontend` repository
@@ -192,7 +339,7 @@ git push -u origin main
 
 5. Click "Deploy"
 
-### 3.3 Verify Store Deployment
+### 4.3 Verify Store Deployment
 
 1. Open your store URL: `https://bagdja-store.vercel.app`
 2. Check home page loads
@@ -201,9 +348,9 @@ git push -u origin main
 
 ---
 
-## 🔨 Step 4: Deploy Console Frontend (Developer Dashboard)
+## 🔨 Step 5: Deploy Console Frontend (Developer Dashboard)
 
-### 4.1 Prepare Repository
+### 5.1 Prepare Repository
 
 ```bash
 cd bagdja-console-frontend
@@ -216,7 +363,7 @@ git branch -M main
 git push -u origin main
 ```
 
-### 4.2 Deploy to Vercel
+### 5.2 Deploy to Vercel
 
 1. Go to https://vercel.com/new
 2. Import `bagdja-console-frontend` repository
@@ -232,7 +379,7 @@ git push -u origin main
 
 5. Click "Deploy"
 
-### 4.3 Verify Console Deployment
+### 5.3 Verify Console Deployment
 
 1. Open console URL: `https://bagdja-console.vercel.app`
 2. Sign up with a new account
@@ -242,9 +389,9 @@ git push -u origin main
 
 ---
 
-## 🔄 Step 5: Update CORS & URLs
+## 🔄 Step 6: Update CORS & URLs
 
-### 5.1 Update API CORS Settings
+### 6.1 Update API CORS Settings
 
 In Vercel dashboard for API Services:
 1. Go to **Settings → Environment Variables**
@@ -254,22 +401,36 @@ In Vercel dashboard for API Services:
    ```
 3. Redeploy: **Deployments → Three dots → Redeploy**
 
-### 5.2 Update Supabase Auth URLs
+### 6.2 Update Supabase Auth URLs
 
 In Supabase dashboard:
 1. Go to **Authentication → URL Configuration**
-2. Set **Site URL**: `https://bagdja-store.vercel.app`
+2. Set **Site URL**: `https://bagdja-account.vercel.app` (primary auth service)
 3. Add **Redirect URLs**:
    ```
+   https://bagdja-account.vercel.app/**
    https://bagdja-store.vercel.app/**
    https://bagdja-console.vercel.app/**
    ```
 
 ---
 
-## ✅ Step 6: Testing End-to-End
+## ✅ Step 7: Testing End-to-End
 
-### 6.1 Test Store Frontend (Public)
+### 7.1 Test Bagdja Account (Authentication)
+
+1. Visit account: `https://bagdja-account.vercel.app`
+2. Sign up with new email
+3. Verify email confirmation
+4. Sign in successfully
+5. Test profile creation
+6. Create a company
+7. Test company transfer
+8. Verify ownership logs
+9. Test dark/light mode toggle
+10. Test logout
+
+### 7.2 Test Store Frontend (Public)
 
 1. Visit store: `https://bagdja-store.vercel.app`
 2. Browse products
@@ -277,7 +438,7 @@ In Supabase dashboard:
 4. Sign up as Buyer
 5. Sign in and verify session
 
-### 6.2 Test Developer Console
+### 7.3 Test Developer Console
 
 1. Visit console: `https://bagdja-console.vercel.app`
 2. Sign up as Developer
@@ -285,7 +446,7 @@ In Supabase dashboard:
 4. Edit the product
 5. Set status to "published"
 
-### 6.3 Verify Data Flow
+### 7.4 Verify Data Flow
 
 1. Open Store Frontend
 2. Navigate to category of created product
@@ -431,15 +592,22 @@ VITE_SUPABASE_URL=https://xxxxx.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJ... (anon key)
 ```
 
+### Bagdja Account
+```env
+VITE_SUPABASE_URL=https://xxxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJ... (anon key)
+```
+
 ---
 
 ## 🎉 Deployment Complete!
 
-Your 3-layer microservices marketplace is now live:
+Your complete Bagdja platform is now live:
 
-- **Store**: `https://bagdja-store.vercel.app`
-- **Console**: `https://bagdja-console.vercel.app`
-- **API**: `https://bagdja-api.vercel.app`
+- **Account**: `https://bagdja-account.vercel.app` (Authentication Hub)
+- **Store**: `https://bagdja-store.vercel.app` (Public Marketplace)
+- **Console**: `https://bagdja-console.vercel.app` (Developer Dashboard)
+- **API**: `https://bagdja-api.vercel.app` (Backend Services)
 
 ### Next Steps
 
