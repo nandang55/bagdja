@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { supabase } from '../supabaseClient'
 import { useTheme } from '../contexts/ThemeContext'
-import Logo from './Logo'
+import Header from './Header'
 
 export default function ProfilePage({ session }) {
   const navigate = useNavigate()
@@ -272,46 +272,21 @@ export default function ProfilePage({ session }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      <div className="max-w-4xl mx-auto">
-        {/* Header with Back Button */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-6 border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            {/* Back Button */}
-            <button
-              onClick={() => navigate('/')}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              aria-label="Go back"
-            >
-              <svg
-                className="w-6 h-6 text-gray-700 dark:text-gray-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      {/* Header Component with Back Button */}
+      <Header session={session} showBackButton={true} backTo="/" />
 
-            {/* Title */}
-            <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                <div className="w-10 h-10 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 p-1.5">
-                  <Logo className="w-full h-full" />
-                </div>
-                Profile Settings
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Manage your personal information and preferences
-              </p>
-            </div>
+      <div className="py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Page Title */}
+          <div className="mb-6">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+              Profile Settings
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              Manage your personal information and preferences
+            </p>
           </div>
-        </div>
 
         {/* Tabs */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
